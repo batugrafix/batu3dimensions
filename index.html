@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batu 3Dimensions</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --K:  #0d0d0d;
+  --B:  #1a3d6e;   /* slightly more teal-leaning blue */
+  --B2: #2a5cbb;   /* brighter hover */
+  --B3: #4a80d8;   /* lightest highlight */
+  --C:  #2a5c6e;
+  --C2: #3a7a8e;
+  --W:  #f0ece5;
+  --G1: #161616;
+  --G2: #202020;
+  --G3: #363636;
+  --G4: #585858;
+  --G5: #888;
+  --G6: #b4b4b4;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--K);
+  color: var(--W);
+  font-family: 'League Spartan', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── CURSOR ── */
+#cur {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--B2);
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width .18s, height .18s, background .18s;
+}
+#cur.hover {
+  width: 34px; height: 34px;
+  background: transparent;
+  border: 1px solid var(--G5);
+}
+
+/* ─────────────────────
+   NAV
+───────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: stretch;
+  height: 60px;
+  background: var(--K);
+  border-bottom: 1px solid var(--G2);
+}
+
+.nav-left {
+  background: transparent;
+  border-left: 3px solid var(--B2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 2.5rem;
+  min-width: 320px;
+  gap: 4px;
+}
+
+.nav-wordmark {
+  font-weight: 200;
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+  color: var(--W);
+  line-height: 1;
+}
+
+.nav-fullname {
+  font-weight: 200;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(240,236,229,0.75);
+}
+
+.nav-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nav-right a {
+  font-weight: 200;
+  font-size: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--G6);
+  padding: 0 2rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--G2);
+  position: relative;
+  transition: color .2s, background .2s;
+}
+
+.nav-right a::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--B2);
+  opacity: 0.5;
+}
+
+.nav-right a:hover {
+  color: var(--W);
+  background: var(--G1);
+}
+
+.nav-right a:hover::after {
+  opacity: 1;
+  left: 0; right: 0;
+  transition: left .2s, right .2s, opacity .2s;
+}
+
+/* ─────────────────────
+   TITLE STRIP
+───────────────────── */
+.title-strip {
+  margin-top: 60px;
+  padding: 4.5rem 3rem;
+  border-bottom: 1px solid var(--G2);
+  background: var(--K);
+}
+
+/* ─────────────────────
+   IDENTITY BAR
+───────────────────── */
+.identity-bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--G2);
+  background: var(--K);
+}
+
+.id-name-block {
+  padding: 1.4rem 3rem;
+  border-right: 1px solid var(--G2);
+  display: flex;
+  align-items: center;
+}
+
+.id-name {
+  font-weight: 100;
+  font-size: clamp(3rem, 7vw, 8rem);
+  letter-spacing: 0.01em;
+  color: var(--W);
+  line-height: 0.9;
+  white-space: nowrap;
+}
+
+.id-name .dim { color: var(--B3); }
+
+.id-fullname {
+  font-weight: 200;
+  font-size: 1.3rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--G6);
+}
+
+.id-discipline {
+  padding: 1.4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6rem;
+  border-right: 1px solid var(--G2);
+}
+
+.id-disc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 200;
+  font-size: 1.3rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--G6);
+}
+
+.id-disc-item svg,
+.id-disc-item img {
+  flex-shrink: 0;
+  opacity: 0.75;
+  object-fit: contain;
+}
+
+.id-disc-item svg { width: 20px; height: 20px; }
+.id-disc-item img { width: 32px; height: 32px; margin-left: -6px; }
+
+.id-disc-item svg, .id-disc-item img {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.id-status {
+  padding: 1.4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.id-status-label {
+  font-weight: 200;
+  font-size: 0.55rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--G4);
+}
+
+.id-status-val {
+  font-weight: 200;
+  font-size: 1.3rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--W);
+}
+
+/* ─────────────────────
+   SECTION HEADER
+───────────────────── */
+.sec-head {
+  display: flex;
+  align-items: stretch;
+  height: 72px;
+  border-top: 1px solid var(--G2);
+  border-bottom: 1px solid var(--G2);
+}
+
+.sec-num {
+  background: var(--G2);
+  color: var(--G5);
+  font-weight: 200;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  padding: 0 2.2rem;
+  min-width: 90px;
+}
+
+.sec-name {
+  font-weight: 100;
+  font-size: 2.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--W);
+  display: flex;
+  align-items: center;
+  padding: 0 2.5rem;
+  flex: 1;
+}
+
+.sec-dots {
+  display: none;
+}
+
+.dot { display: none; }
+
+.sec-num::after {
+  content: none;
+}
+
+.sec-name::before {
+  content: '//';
+  font-weight: 200;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  color: var(--G4);
+  margin-right: 1.5rem;
+}
+
+/* ─────────────────────
+   PROJECTS GRID
+───────────────────── */
+.projects-mosaic {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.pj {
+  position: relative;
+  overflow: hidden;
+  background: var(--G1);
+  border-right: 1px solid var(--G2);
+  border-bottom: 1px solid var(--G2);
+  cursor: pointer;
+}
+
+.pj video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.62;
+  pointer-events: none;
+  transition: opacity .4s, transform .75s cubic-bezier(.25,.46,.45,.94);
+}
+
+.pj:hover video { opacity: 0.85; transform: scale(1.02); }
+.pj.playing video { opacity: 1; transform: scale(1.02); }
+
+.pj-play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .3s;
+  z-index: 3;
+}
+
+.pj.playing .pj-play-btn { opacity: 0; }
+.pj.playing:hover .pj-play-btn { opacity: 1; }
+
+.pj-play-circle {
+  width: 52px; height: 52px;
+  border: 1px solid rgba(240,236,229,0.5);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, border-color .2s;
+}
+
+.pj:hover .pj-play-circle { border-color: var(--W); background: rgba(255,255,255,0.1); }
+.pj.playing .pj-play-circle { background: rgba(255,255,255,0.15); }
+
+.pj-play-circle svg.icon-pause { display: none; }
+.pj.playing .pj-play-circle svg.icon-play { display: none; }
+.pj.playing .pj-play-circle svg.icon-pause { display: block; }
+
+.bk-play-circle svg.icon-pause { display: none; }
+.bk.playing .bk-play-circle svg.icon-play { display: none; }
+.bk.playing .bk-play-circle svg.icon-pause { display: block; }
+
+.pj-info {
+  position: absolute; inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.6rem 2rem;
+  opacity: 0;
+  transition: opacity .3s;
+  background: linear-gradient(to top, rgba(13,13,13,.92) 0%, transparent 60%);
+}
+
+.pj:hover .pj-info { opacity: 1; }
+
+.pj-info::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--B2);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .3s;
+}
+
+.pj:hover .pj-info::before { transform: scaleY(1); }
+
+.pj-num {
+  font-weight: 200;
+  font-size: 0.8rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--C2);
+  margin-bottom: 0.25rem;
+}
+
+.pj-name {
+  font-weight: 200;
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--W);
+}
+
+/* ─────────────────────
+   EXPANDABLE DROPDOWN
+   — used for Books + individual clips
+───────────────────── */
+.expand-section {
+  border-top: 1px solid var(--G2);
+}
+
+.expand-trigger {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 2.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--G2);
+  background: transparent;
+  transition: background .2s;
+  user-select: none;
+}
+
+.expand-trigger:hover { background: var(--G1); }
+.expand-trigger.open { background: var(--G1); }
+
+.expand-marker {
+  width: 3px;
+  height: 22px;
+  background: var(--G3);
+  margin-right: 1.8rem;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+
+.expand-trigger.open .expand-marker { background: var(--G4); }
+
+.expand-label {
+  font-weight: 100;
+  font-size: 1.3rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--W);
+  flex: 1;
+  transition: color .2s;
+}
+
+.expand-trigger:hover .expand-label { color: var(--W); }
+.expand-trigger.open .expand-label { color: var(--W); }
+
+.expand-meta { display: none; }
+
+.expand-icon {
+  width: 28px; height: 28px;
+  border: 1px solid var(--B2);
+  background: rgba(42,82,148,0.15);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: border-color .2s, transform .35s, background .2s;
+}
+
+.expand-trigger:hover .expand-icon { background: rgba(42,82,148,0.3); }
+.expand-trigger.open .expand-icon { transform: rotate(45deg); background: var(--B2); border-color: var(--B2); }
+
+.expand-icon svg {
+  width: 12px; height: 12px;
+  stroke: var(--W); fill: none;
+  stroke-width: 2; stroke-linecap: round;
+}
+
+/* Collapsible body */
+.expand-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .4s cubic-bezier(.4,0,.2,1);
+}
+
+.expand-body.open { grid-template-rows: 1fr; }
+
+.expand-inner { overflow: hidden; }
+
+/* Full reel inline under Work header */
+.reel-inline {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--G2);
+  background: var(--K);
+  position: relative;
+}
+
+.reel-inline video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.55;
+}
+
+.reel-sound-btn {
+  position: absolute;
+  bottom: 15%;
+  right: 8%;
+  width: 58px; height: 58px;
+  background: rgba(13,13,13,0.65);
+  border: 1px solid rgba(240,236,229,0.45);
+  color: var(--W);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.reel-sound-btn svg {
+  width: 24px; height: 24px;
+}
+
+@media (max-width: 768px) {
+  .reel-sound-btn {
+    width: 28px; height: 28px;
+    bottom: 1.2rem;
+    right: 1.2rem;
+    top: auto; left: auto;
+    transform: none;
+    border-color: rgba(240,236,229,0.4);
+    background: rgba(13,13,13,0.55);
+  }
+  .reel-sound-btn svg { width: 13px; height: 13px; }
+}
+
+/* Books 6-column full-width grid */
+.books-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-bottom: 1px solid var(--G2);
+}
+
+/* Two-column dropdown rows */
+.two-col-dropdowns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--G2);
+}
+
+.col-drop {
+  border-top: none;
+}
+
+/* Video inside a column dropdown */
+.col-clip {
+  border-bottom: 1px solid var(--G2);
+}
+
+.col-clip .pj {
+  border-right: none;
+  border-bottom: none;
+  display: block;
+}
+
+/* Books 3-per-row inside a column */
+.books-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--G2);
+}
+
+/* Single clip expand container — full width */
+.single-clip {
+  border-bottom: 1px solid var(--G2);
+}
+
+.single-clip .pj {
+  border-right: none;
+  border-bottom: none;
+  display: block;
+  width: 100%;
+}
+
+/* Books: kept for legacy */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--G2);
+}
+
+.single-clip .pj:first-child {
+  border-right: 1px solid var(--G2);
+}
+.bk {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 9/16;
+  background: var(--G1);
+  border-right: 1px solid var(--G2);
+  cursor: pointer;
+}
+.bk:last-child { border-right: none; }
+
+.bk video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.62;
+  pointer-events: none;
+  transition: opacity .4s, transform .7s cubic-bezier(.25,.46,.45,.94);
+}
+
+.bk:hover video { opacity: 0.85; }
+.bk.playing video { opacity: 1; transform: scale(1.03); }
+
+.bk-play {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2; transition: opacity .3s;
+}
+.bk.playing .bk-play { opacity: 0; }
+.bk.playing:hover .bk-play { opacity: 1; }
+
+.bk-play-circle {
+  width: 38px; height: 38px;
+  border: 1px solid rgba(240,236,229,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .2s, background .2s;
+}
+.bk:hover .bk-play-circle { border-color: var(--W); background: rgba(255,255,255,0.1); }
+.bk-play-circle svg { width: 11px; height: 11px; fill: var(--W); margin-left: 2px; }
+
+.bk-num {
+  position: absolute;
+  bottom: 1rem; left: 1.2rem;
+  font-weight: 200;
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  color: var(--C2);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.bk:hover .bk-num { opacity: 1; }
+
+/* ─────────────────────
+   LEARNING
+───────────────────── */
+.learning-wrap {
+  display: grid;
+  grid-template-columns: 480px 1fr;
+  border-bottom: 1px solid var(--G2);
+  cursor: none;
+  align-items: stretch;
+}
+
+.learn-thumb {
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--G2);
+  aspect-ratio: 16/9;
+  align-self: center;
+}
+
+.learn-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  opacity: 0.75;
+  transition: opacity .4s, transform .6s;
+}
+
+.learning-wrap:hover .learn-thumb img { opacity: 1; transform: scale(1.04); }
+
+.learn-play {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.play-ring {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  border: 1px solid rgba(240,236,229,0.3);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .25s, background .25s;
+}
+
+.learning-wrap:hover .play-ring {
+  border-color: var(--B2);
+  background: var(--B);
+}
+
+.play-ring svg { width: 15px; height: 15px; fill: var(--W); margin-left: 3px; }
+
+.learn-info {
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.learn-tag {
+  font-weight: 100;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  color: var(--W);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  line-height: 1.1;
+}
+
+.learn-tag::before {
+  content: none;
+}
+
+.learn-title {
+  font-weight: 100;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--W);
+  line-height: 1;
+}
+
+.learn-desc {
+  font-weight: 200;
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--G5);
+  letter-spacing: 0.05em;
+  max-width: 400px;
+}
+
+.learn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--B2);
+  background: rgba(42,82,148,0.15);
+  padding: 0.6rem 1.2rem;
+  color: var(--W);
+  font-weight: 200;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  width: fit-content;
+  transition: border-color .22s, background .22s;
+}
+
+.learning-wrap:hover .learn-cta { background: var(--B); border-color: var(--B2); }
+
+.learn-cta svg {
+  width: 12px; height: 12px;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ─────────────────────
+   CONTACT
+───────────────────── */
+.contact-inner {
+  border-bottom: 1px solid var(--G2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.contact-info-col {
+  padding: 4rem 5rem;
+  border-right: 1px solid var(--G2);
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.cd-label {
+  font-weight: 200;
+  font-size: 0.72rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--G4);
+  margin-bottom: 0.6rem;
+}
+
+.cd-val {
+  font-weight: 100;
+  font-size: 1.8rem;
+  letter-spacing: 0.02em;
+  color: var(--W);
+  line-height: 1.1;
+}
+
+.cd-val a { color: var(--W); transition: color .2s; }
+.cd-val a:hover { color: var(--B3); }
+
+.social-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.soc-link {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  font-weight: 100;
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+  color: var(--G5);
+  padding: 1.4rem 5rem;
+  border-bottom: 1px solid var(--G2);
+  transition: color .2s, padding-left .2s;
+}
+
+.soc-link:first-child { border-top: 1px solid var(--G2); }
+.soc-link:hover { color: var(--W); padding-left: 5.6rem; }
+
+.soc-icon {
+  width: 30px; height: 30px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─────────────────────
+   FOOTER
+───────────────────── */
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  border-top: 1px solid var(--G2);
+  padding: 0 3rem;
+}
+
+.ft-logo {
+  font-weight: 200;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  color: var(--G4);
+}
+
+.ft-copy {
+  font-weight: 200;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--G3);
+}
+
+/* ─────────────────────
+   REVEAL
+───────────────────── */
+.rv {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.rv.in { opacity: 1; transform: none; }
+
+/* ─────────────────────
+   ERASE ALL BORDERS
+   except nav + sec-head
+───────────────────── */
+.title-strip,
+.identity-bar,
+.id-name-block,
+.id-discipline,
+.id-status,
+.reel-inline,
+.two-col-dropdowns,
+.col-drop,
+.expand-section,
+.expand-trigger,
+.expand-body,
+.col-clip,
+.col-clip .pj,
+.books-grid-6,
+.books-grid-6 .bk,
+.pj,
+.learning-wrap,
+.learn-thumb,
+.contact-inner,
+.contact-info-col,
+.soc-link,
+.soc-link:first-child,
+footer {
+  border: none !important;
+}
+
+/* keep nav bottom line */
+nav { border-bottom: 1px solid var(--G2) !important; }
+
+/* keep section headers top+bottom */
+.sec-head { border-top: 1px solid var(--G2) !important; border-bottom: 1px solid var(--G2) !important; }
+
+/* keep expand trigger bottom line so rows are separated */
+.expand-trigger { border-bottom: 1px solid var(--G2) !important; }
+
+/* keep nav link separators */
+.nav-right a { border-left: 1px solid var(--G2) !important; }
+
+/* keep reel inline separator from section below */
+.reel-inline { border-bottom: 1px solid var(--G2) !important; }
+
+/* ─────────────────────
+   MOBILE
+───────────────────── */
+@media (max-width: 768px) {
+
+  /* Hide custom cursor on touch */
+  #cur { display: none; }
+  body { cursor: auto; }
+
+  /* NAV */
+  nav { height: auto; flex-wrap: wrap; }
+  .nav-left { min-width: 0; flex: 1; padding: 0.9rem 1.2rem; }
+  .nav-wordmark { font-size: 0.85rem; }
+  .nav-fullname { font-size: 0.5rem; }
+  .nav-right a { padding: 0 0.9rem; font-size: 0.7rem; letter-spacing: 0.15em; }
+
+  /* TITLE STRIP */
+  .title-strip { padding: 2rem 1.2rem; }
+  .id-name { font-size: clamp(3rem, 13vw, 5rem); white-space: normal; }
+
+  /* IDENTITY BAR */
+  .identity-bar {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .id-name-block { border-right: none; border-bottom: 1px solid var(--G2); padding: 1.2rem 1.2rem; }
+  .id-fullname { font-size: 1rem; letter-spacing: 0.18em; }
+  .id-discipline { border-right: none; border-bottom: 1px solid var(--G2); padding: 1.2rem 1.2rem; gap: 0.8rem; }
+  .id-disc-item { font-size: 0.95rem; letter-spacing: 0.14em; }
+  .id-status { padding: 1.2rem 1.2rem; }
+  .id-status-val { font-size: 0.95rem; letter-spacing: 0.14em; }
+
+  /* SECTION HEADERS */
+  .sec-head { height: auto; }
+  .sec-num { font-size: 0.85rem; padding: 0.9rem 1rem; min-width: 60px; }
+  .sec-name { font-size: 1.6rem; padding: 0.9rem 1.2rem; letter-spacing: 0.12em; }
+  .sec-dots { padding: 0 1rem; }
+
+  /* EXPAND TRIGGERS */
+  .expand-trigger { padding: 0 1.2rem; height: 56px; }
+  .expand-label { font-size: 0.78rem; letter-spacing: 0.15em; font-weight: 200; }
+  .expand-label { font-size: 1.3rem; letter-spacing: 0.1em; }
+  .expand-meta { font-size: 0.6rem; margin-right: 0.8rem; }
+
+  /* TWO-COL DROPDOWNS → single column on mobile */
+  .two-col-dropdowns { grid-template-columns: 1fr; }
+  .col-drop[style*="border-left"] { border-left: none !important; border-top: 1px solid var(--G2); }
+
+  /* BOOKS 6-col → 2-col on mobile */
+  .books-grid-6 { grid-template-columns: repeat(2, 1fr); }
+  .bk { aspect-ratio: 9/16; }
+
+  /* REEL */
+  .reel-inline { aspect-ratio: 16/9; }
+
+  /* LEARNING */
+  .learning-wrap { grid-template-columns: 1fr; }
+  .learn-thumb {
+    border-right: none;
+    border-bottom: 1px solid var(--G2);
+    aspect-ratio: 16/9;
+    width: 100%;
+  }
+  .learn-info { padding: 2rem 1.2rem; gap: 1rem; }
+  .learn-title { font-size: 1.8rem; }
+  .learn-tag { font-size: 1.4rem; letter-spacing: 0.05em; }
+  .learn-cta { font-size: 0.65rem; padding: 0.7rem 1.2rem; }
+
+  /* CONTACT */
+  .contact-inner { grid-template-columns: 1fr; }
+  .contact-info-col {
+    border-right: none;
+    border-bottom: 1px solid var(--G2);
+    padding: 2.5rem 1.2rem;
+    gap: 2rem;
+  }
+  .cd-val { font-size: 1.2rem; }
+  .soc-link { padding: 1.2rem 1.2rem; font-size: 1.2rem; gap: 1rem; transition: color .2s; }
+  .soc-link:hover { padding-left: 1.2rem; }
+
+  /* FOOTER */
+  footer { padding: 0 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-wordmark">Batu 3Dimensions</div>
+    <div class="nav-fullname">Battuguldur Badamdorj</div>
+  </div>
+  <div class="nav-right">
+    <a href="#work">Work</a>
+    <a href="#learning">Learning</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- TITLE STRIP -->
+<div class="title-strip">
+  <div class="id-name">Batu <span class="dim">3Dimensions</span></div>
+</div>
+
+<!-- INFO BAR -->
+<div class="identity-bar">
+  <div class="id-name-block">
+    <div class="id-fullname">Battuguldur Badamdorj</div>
+  </div>
+  <div class="id-discipline">
+    <div class="id-disc-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--C2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:1;flex-shrink:0;">
+        <polygon points="5,3 19,12 5,21"/>
+      </svg>
+      Motion Design
+    </div>
+    <div class="id-disc-item">
+      <img src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/ue_circle.png" alt="Unreal Engine" style="opacity:0.9;flex-shrink:0;object-fit:contain;">
+      Unreal Engine Specialist
+    </div>
+  </div>
+  <div class="id-status">
+    <div class="id-status-label">Status</div>
+    <div class="id-status-val">Open to Projects</div>
+  </div>
+</div>
+
+<!-- WORK -->
+<section id="work">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <div class="sec-name">Work</div>
+    <div class="sec-dots">
+      <div class="dot b"></div>
+      <div class="dot c"></div>
+    </div>
+  </div>
+
+  <!-- FULL REEL — inline, no dropdown -->
+  <div class="reel-inline rv" onclick="toggleReelSound()" style="cursor:pointer">
+    <video id="reel-video" autoplay muted loop playsinline>
+      <source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/Full_Reel.mov" type="video/mp4">
+    </video>
+    <div class="reel-sound-btn" id="reel-sound-btn">
+      <svg id="reel-icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+        <line x1="23" y1="9" x2="17" y2="15"/>
+        <line x1="17" y1="9" x2="23" y2="15"/>
+      </svg>
+      <svg id="reel-icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ROW 1: Statue (left) + Run-time Motion Design (right) -->
+  <div class="two-col-dropdowns">
+    <div class="expand-section rv col-drop">
+      <div class="expand-trigger" id="statue-trigger" onclick="toggleExpand('statue')">
+        <div class="expand-marker"></div>
+        <div class="expand-label">Statue</div>
+        <div class="expand-meta">01</div>
+        <div class="expand-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="expand-body" id="statue-body">
+        <div class="expand-inner">
+          <div class="col-clip">
+            <div class="pj" style="aspect-ratio:16/9;width:100%">
+          <div class="pj-play-btn"><div class="pj-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+          <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/Statue_R.mp4" type="video/mp4"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expand-section rv col-drop" style="border-left:1px solid var(--G2)">
+      <div class="expand-trigger" id="runtime-trigger" onclick="toggleExpand('runtime')">
+        <div class="expand-marker"></div>
+        <div class="expand-label">Run-time Motion Design</div>
+        <div class="expand-meta">03</div>
+        <div class="expand-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="expand-body" id="runtime-body">
+        <div class="expand-inner">
+          <div class="col-clip">
+            <div class="pj" style="aspect-ratio:16/9;width:100%">
+          <div class="pj-play-btn"><div class="pj-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+          <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/Run-time_Motion_Design_R.mp4" type="video/mp4"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Books — full width, all 6 clips -->
+  <div class="expand-section rv">
+    <div class="expand-trigger" id="books-trigger" onclick="toggleExpand('books')">
+      <div class="expand-marker"></div>
+      <div class="expand-label">Books</div>
+      <div class="expand-meta">02 — Six clips</div>
+      <div class="expand-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    </div>
+    <div class="expand-body" id="books-body">
+      <div class="expand-inner">
+        <div class="books-grid-6">
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__1_.mp4" type="video/mp4"></video>
+            <div class="bk-num">I</div>
+          </div>
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__2_.mp4" type="video/mp4"></video>
+            <div class="bk-num">II</div>
+          </div>
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__3_.mp4" type="video/mp4"></video>
+            <div class="bk-num">III</div>
+          </div>
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__4_.mp4" type="video/mp4"></video>
+            <div class="bk-num">IV</div>
+          </div>
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__5_.mp4" type="video/mp4"></video>
+            <div class="bk-num">V</div>
+          </div>
+          <div class="bk">
+            <div class="bk-play"><div class="bk-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+            <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/books__6_.mp4" type="video/mp4"></video>
+            <div class="bk-num">VI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Apples (left) + ArchViz (right) -->
+  <div class="two-col-dropdowns">
+    <div class="expand-section rv col-drop">
+      <div class="expand-trigger" id="apples-trigger" onclick="toggleExpand('apples')">
+        <div class="expand-marker"></div>
+        <div class="expand-label">Apples</div>
+        <div class="expand-meta">04</div>
+        <div class="expand-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="expand-body" id="apples-body">
+        <div class="expand-inner">
+          <div class="col-clip">
+            <div class="pj" style="aspect-ratio:16/9;width:100%">
+          <div class="pj-play-btn"><div class="pj-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+          <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/Apples_R.mp4" type="video/mp4"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expand-section rv col-drop" style="border-left:1px solid var(--G2)">
+      <div class="expand-trigger" id="archviz-trigger" onclick="toggleExpand('archviz')">
+        <div class="expand-marker"></div>
+        <div class="expand-label">ArchViz</div>
+        <div class="expand-meta">05</div>
+        <div class="expand-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      </div>
+      <div class="expand-body" id="archviz-body">
+        <div class="expand-inner">
+          <div class="col-clip">
+            <div class="pj" style="aspect-ratio:16/9;width:100%">
+          <div class="pj-play-btn"><div class="pj-play-circle"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div></div>
+          <video muted loop preload="metadata"><source src="https://pub-7a5066a2e7cd4dd5b3445b026a68d3dd.r2.dev/ArchViz_R.mp4" type="video/mp4"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEARNING -->
+<section id="learning">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <div class="sec-name">Learning</div>
+    <div class="sec-dots">
+      <div class="dot b"></div>
+      <div class="dot c"></div>
+    </div>
+  </div>
+  <a href="https://www.youtube.com/watch?v=KVdv2VheuLQ" target="_blank" rel="noopener" style="display:block">
+    <div class="learning-wrap rv">
+      <div class="learn-thumb">
+        <img src="https://img.youtube.com/vi/KVdv2VheuLQ/maxresdefault.jpg" alt="Tutorial thumbnail" loading="lazy">
+        <div class="learn-play">
+          <div class="play-ring">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="learn-info">
+        <div class="learn-tag">Unreal Engine Motion Design Tutorial</div>
+        <div class="learn-cta">
+          Watch on YouTube
+          <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7,7 17,7 17,17"/></svg>
+        </div>
+      </div>
+    </div>
+  </a>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <div class="sec-name">Contact</div>
+    <div class="sec-dots">
+      <div class="dot b"></div>
+      <div class="dot c"></div>
+    </div>
+  </div>
+
+  <div class="contact-inner rv">
+    <!-- Left: email + phone -->
+    <div class="contact-info-col">
+      <div>
+        <div class="cd-label">Email</div>
+        <div class="cd-val">
+          <a href="mailto:batugrafix@gmail.com">batugrafix@gmail.com</a>
+        </div>
+      </div>
+      <div>
+        <div class="cd-label">Phone</div>
+        <div class="cd-val">
+          <a href="tel:+12133613889">+1 (213) 361-3889</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: socials -->
+    <div class="social-list">
+      <a href="https://www.instagram.com/batu3dimensions" target="_blank" rel="noopener" class="soc-link">
+        <span class="soc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="ig1" cx="30%" cy="107%" r="150%">
+                <stop offset="0%" stop-color="#fdf497"/>
+                <stop offset="5%" stop-color="#fdf497"/>
+                <stop offset="45%" stop-color="#fd5949"/>
+                <stop offset="60%" stop-color="#d6249f"/>
+                <stop offset="90%" stop-color="#285AEB"/>
+              </radialGradient>
+            </defs>
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="url(#ig1)"/>
+            <circle cx="12" cy="12" r="4" fill="none" stroke="white" stroke-width="1.8"/>
+            <circle cx="17.5" cy="6.5" r="1.2" fill="white"/>
+          </svg>
+        </span>
+        Instagram
+      </a>
+      <a href="https://www.youtube.com/channel/UCiZm_-9FByih4-O2owHadEg" target="_blank" rel="noopener" class="soc-link">
+        <span class="soc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#FF0000"/>
+            <polygon points="10,8.5 10,15.5 16,12" fill="white"/>
+          </svg>
+        </span>
+        YouTube
+      </a>
+      <a href="https://www.linkedin.com/in/batu-badamdorj-717a0a1a9" target="_blank" rel="noopener" class="soc-link">
+        <span class="soc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#0A66C2"/>
+            <text x="4" y="17" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="white">in</text>
+          </svg>
+        </span>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Batu 3Dimensions</div>
+  <div class="ft-copy">© 2025 batu3dimensions.com</div>
+</footer>
+
+<script>
+  /* Reel sound toggle */
+  function toggleReelSound() {
+    const vid = document.getElementById('reel-video');
+    const muted = document.getElementById('reel-icon-muted');
+    const sound = document.getElementById('reel-icon-sound');
+    vid.muted = !vid.muted;
+    muted.style.display = vid.muted ? 'block' : 'none';
+    sound.style.display = vid.muted ? 'none' : 'block';
+  }
+
+  /* Cursor */
+  const cur = document.getElementById('cur');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .pj, .bk, .learning-wrap, .expand-trigger').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+  });
+
+  /* Click to play/pause videos */
+  const PLAY_SVG = `<svg class="icon-play" viewBox="0 0 24 24" fill="var(--W)" width="16" height="16" style="margin-left:3px"><polygon points="5,3 19,12 5,21"/></svg>`;
+  const PAUSE_SVG = `<svg class="icon-pause" viewBox="0 0 24 24" fill="var(--W)" width="16" height="16"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+  const PLAY_SM = `<svg class="icon-play" viewBox="0 0 24 24" fill="var(--W)" width="11" height="11" style="margin-left:2px"><polygon points="5,3 19,12 5,21"/></svg>`;
+  const PAUSE_SM = `<svg class="icon-pause" viewBox="0 0 24 24" fill="var(--W)" width="11" height="11"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+
+  function initVideoClick(el) {
+    const isSmall = el.classList.contains('bk');
+    const circleClass = isSmall ? '.bk-play-circle' : '.pj-play-circle';
+    const circle = el.querySelector(circleClass);
+    if (circle) circle.innerHTML = isSmall ? PLAY_SM : PLAY_SVG;
+
+    el.addEventListener('click', () => {
+      const vid = el.querySelector('video');
+      if (!vid) return;
+      if (vid.paused) {
+        vid.play();
+        el.classList.add('playing');
+        if (circle) circle.innerHTML = isSmall ? PAUSE_SM : PAUSE_SVG;
+      } else {
+        vid.pause();
+        el.classList.remove('playing');
+        if (circle) circle.innerHTML = isSmall ? PLAY_SM : PLAY_SVG;
+      }
+    });
+  }
+
+  document.querySelectorAll('.pj, .bk').forEach(el => {
+    el.removeAttribute('onmouseenter');
+    el.removeAttribute('onmouseleave');
+    initVideoClick(el);
+  });
+
+  /* Expand/collapse */
+  function toggleExpand(id) {
+    const trigger = document.getElementById(id + '-trigger');
+    const body    = document.getElementById(id + '-body');
+    const isOpen  = body.classList.contains('open');
+    if (isOpen) {
+      body.querySelectorAll('video').forEach(v => v.pause());
+    }
+    body.classList.toggle('open', !isOpen);
+    trigger.classList.toggle('open', !isOpen);
+  }
+
+  /* Scroll reveal */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.06 });
+
+  document.querySelectorAll('.rv').forEach((el, i) => {
+    el.style.transitionDelay = (i % 4) * 0.07 + 's';
+    io.observe(el);
+  });
+</script>
+</body>
+</html>
