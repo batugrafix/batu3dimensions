@@ -69,7 +69,7 @@ nav {
 
 .nav-left {
   background: transparent;
-  border-left: 3px solid var(--B2);
+  border-left: 3px solid #4a80d8;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -228,7 +228,7 @@ nav {
 
 .id-status-label {
   font-weight: 200;
-  font-size: 0.55rem;
+  font-size: 0.82rem;
   letter-spacing: 0.42em;
   text-transform: uppercase;
   color: var(--G4);
@@ -451,15 +451,15 @@ nav {
 
 .expand-icon {
   width: 28px; height: 28px;
-  border: 1px solid var(--B2);
-  background: rgba(42,82,148,0.15);
+  border: 1px solid var(--G3);
+  background: transparent;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  transition: border-color .2s, transform .35s, background .2s;
+  transition: border-color .2s, transform .35s;
 }
 
-.expand-trigger:hover .expand-icon { background: rgba(42,82,148,0.3); }
-.expand-trigger.open .expand-icon { transform: rotate(45deg); background: var(--B2); border-color: var(--B2); }
+.expand-trigger:hover .expand-icon { border-color: var(--G4); }
+.expand-trigger.open .expand-icon { transform: rotate(45deg); border-color: var(--G4); background: transparent; }
 
 .expand-icon svg {
   width: 12px; height: 12px;
@@ -734,8 +734,8 @@ nav {
   display: inline-flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid var(--B2);
-  background: rgba(42,82,148,0.15);
+  border: 1px solid var(--G3);
+  background: transparent;
   padding: 0.6rem 1.2rem;
   color: var(--W);
   font-weight: 200;
@@ -743,10 +743,10 @@ nav {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   width: fit-content;
-  transition: border-color .22s, background .22s;
+  transition: border-color .22s;
 }
 
-.learning-wrap:hover .learn-cta { background: var(--B); border-color: var(--B2); }
+.learning-wrap:hover .learn-cta { border-color: var(--G5); }
 
 .learn-cta svg {
   width: 12px; height: 12px;
@@ -917,7 +917,7 @@ nav { border-bottom: 1px solid var(--G2) !important; }
   .nav-right a { padding: 0 0.9rem; font-size: 0.7rem; letter-spacing: 0.15em; }
 
   /* TITLE STRIP */
-  .title-strip { padding: 2rem 1.2rem; }
+  .title-strip { padding: 3rem 1.2rem; }
   .id-name { font-size: clamp(3rem, 13vw, 5rem); white-space: normal; }
 
   /* IDENTITY BAR */
@@ -940,8 +940,7 @@ nav { border-bottom: 1px solid var(--G2) !important; }
 
   /* EXPAND TRIGGERS */
   .expand-trigger { padding: 0 1.2rem; height: 56px; }
-  .expand-label { font-size: 0.78rem; letter-spacing: 0.15em; font-weight: 200; }
-  .expand-label { font-size: 1.3rem; letter-spacing: 0.1em; }
+  .expand-label { font-size: 13px; letter-spacing: 0.12em; font-weight: 200; }
   .expand-meta { font-size: 0.6rem; margin-right: 0.8rem; }
 
   /* TWO-COL DROPDOWNS → single column on mobile */
@@ -1250,6 +1249,24 @@ nav { border-bottom: 1px solid var(--G2) !important; }
 
     <!-- Right: socials -->
     <div class="social-list">
+      <a href="https://www.linkedin.com/in/batu-badamdorj-717a0a1a9" target="_blank" rel="noopener" class="soc-link">
+        <span class="soc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#0A66C2"/>
+            <text x="4" y="17" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="white">in</text>
+          </svg>
+        </span>
+        LinkedIn
+      </a>
+      <a href="https://www.youtube.com/channel/UCiZm_-9FByih4-O2owHadEg" target="_blank" rel="noopener" class="soc-link">
+        <span class="soc-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="4" fill="#FF0000"/>
+            <polygon points="10,8.5 10,15.5 16,12" fill="white"/>
+          </svg>
+        </span>
+        YouTube
+      </a>
       <a href="https://www.instagram.com/batu3dimensions" target="_blank" rel="noopener" class="soc-link">
         <span class="soc-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1268,24 +1285,6 @@ nav { border-bottom: 1px solid var(--G2) !important; }
           </svg>
         </span>
         Instagram
-      </a>
-      <a href="https://www.youtube.com/channel/UCiZm_-9FByih4-O2owHadEg" target="_blank" rel="noopener" class="soc-link">
-        <span class="soc-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <rect width="24" height="24" rx="4" fill="#FF0000"/>
-            <polygon points="10,8.5 10,15.5 16,12" fill="white"/>
-          </svg>
-        </span>
-        YouTube
-      </a>
-      <a href="https://www.linkedin.com/in/batu-badamdorj-717a0a1a9" target="_blank" rel="noopener" class="soc-link">
-        <span class="soc-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <rect width="24" height="24" rx="4" fill="#0A66C2"/>
-            <text x="4" y="17" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="white">in</text>
-          </svg>
-        </span>
-        LinkedIn
       </a>
     </div>
   </div>
